@@ -39,11 +39,11 @@ class PickerEnv(gym.Env):
             raise ValueError("Invalid image paths, one or more images don't exist")
 
         self.background = self._load_image_as_np(images['background'])
-        self.screen_content = self.background
+        self.observation_space = self.background
 
         # reward - expect greyscale nd only use a single channel
         self.reward = self._load_image_as_np(images['reward'])[:,:,0]
-        self.state = np.zeros_like(self.reward)
+        self.state = np.zeros_like(self.reward, dtype=np.uint8)
         assert self.state.shape[0] == IMAGE_SIZE and self.state.shape[1] == IMAGE_SIZE
 
         # create an action space containing image coordinates [i, j]
@@ -103,13 +103,13 @@ class PickerEnv(gym.Env):
                 # this is a new pick
                 reward = 1
                 self.state[i,j] = 1
-                self.screen_content[i,j,:] = 1
+                self.observation_space[i,j,:] = 1
 
         return np.array(self.state), reward, done, {}
 
 
     def reset(self):
-        self.screen_content = self.background
+        self.observation_space = self.background
         self.state = np.zeros_like(self.reward)
         return np.array(self.state)
 
@@ -119,7 +119,7 @@ class PickerEnv(gym.Env):
             self.viewer = None
             return
 
-        img = self.screen_content
+        img = self.observation_space
         if mode == 'rgb_array':
             return img
         elif mode == 'human':
