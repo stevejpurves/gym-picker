@@ -47,6 +47,7 @@ class PickerEnv(gym.Env):
         assert self.state.shape[0] == IMAGE_SIZE and self.state.shape[1] == IMAGE_SIZE
 
         # create an action space containing image coordinates [i, j]
+        self._n_actions = 2
         self._action_space = spaces.Dict({
             "i": spaces.Discrete(IMAGE_SIZE),
             "j": spaces.Discrete(IMAGE_SIZE)
@@ -67,6 +68,10 @@ class PickerEnv(gym.Env):
     @property
     def action_space(self):
         return self._action_space
+
+    @property
+    def n_actions(self):
+        return self._n_actions
 
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
